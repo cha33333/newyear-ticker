@@ -135,13 +135,14 @@ function clean(t){bad.forEach(w=>{t=t.replace(new RegExp(w,"gi"),"*");}); return
 
 // ---- Firebase Config ----
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBIwD6iMYKHEyfe6aj2mP6KN9g8Q6wAlFA",
+  authDomain: "newyear2026-8186f.firebaseapp.com",
+  databaseURL: "https://newyear2026-8186f-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "newyear2026-8186f",
+  storageBucket: "newyear2026-8186f.firebasestorage.app",
+  messagingSenderId: "754522006420",
+  appId: "1:754522006420:web:626f39febe1d37dd78a581",
+  measurementId: "G-8SXS8ZDCVC"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
@@ -215,6 +216,7 @@ function toggleMusic(){bgm.paused?bgm.play():bgm.pause();}
 
 </body>
 </html>
+
 
 
 
