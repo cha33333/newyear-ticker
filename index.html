@@ -4,27 +4,66 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Happy New Year 2026 ✨</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;display:flex;justify-content:center;align-items:center;font-family:'Inter',sans-serif;overflow:hidden;}
+body{
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family:'Inter',sans-serif;
+  overflow:hidden;
+}
+
 body.day{background:linear-gradient(#87ceeb,#ffffff);}
 body.night{background:radial-gradient(circle at top,#020b2d,#000);}
-canvas{position:fixed;inset:0;z-index:-1;}
-.card{background:rgba(255,255,255,.95);padding:40px;border-radius:30px;width:90%;max-width:520px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.25);position:relative;display:flex;flex-direction:column;gap:20px;}
-h1{font-family:'Playfair Display',serif;font-size:2.6em;margin:0;background:linear-gradient(90deg,#cfae70,#f5e6b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+canvas{position:fixed; inset:0; z-index:-1;}
+
+.card{
+  background:rgba(255,255,255,.95);
+  padding:40px;
+  border-radius:30px;
+  width:90%;
+  max-width:520px;
+  text-align:center;
+  box-shadow:0 30px 80px rgba(0,0,0,.25);
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+
+h1{
+  font-family:'Playfair Display',serif;
+  font-size:2.6em;
+  margin:0;
+  background:linear-gradient(90deg,#cfae70,#f5e6b8);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
 .year{letter-spacing:4px;color:#7a6a42;margin-bottom:15px;}
-.subtitle{display:flex;flex-direction:column;text-align:center;color:#6d5c35;margin-bottom:20px;}
-input{width:100%;padding:14px;border-radius:14px;border:1px solid #e3d6b3;margin-bottom:12px;}
-button{width:100%;padding:14px;border-radius:22px;border:none;cursor:pointer;background:linear-gradient(135deg,#cfae70,#f1d58a);}
-.toggle{position:absolute;top:18px;right:18px;cursor:pointer;font-size:1.2em;}
-.music,.gift{margin-top:12px;cursor:pointer;font-size:1em;}
-.ticker{margin-top:25px;overflow:hidden;border-top:1px solid #eee;padding-top:12px;height:60px;}
-.track{display:flex;flex-direction:column;gap:5px;}
-.line{display:flex;white-space:nowrap;}
-.line span {margin-right:120px;white-space:nowrap;}
+
+.subtitle{display:flex; flex-direction:column; text-align:center; color:#6d5c35; margin-bottom:20px;}
+
+input{width:100%; padding:14px; border-radius:14px; border:1px solid #e3d6b3; margin-bottom:12px;}
+button{width:100%; padding:14px; border-radius:22px; border:none; cursor:pointer; background:linear-gradient(135deg,#cfae70,#f1d58a);}
+
+.toggle{position:absolute; top:18px; right:18px; cursor:pointer; font-size:1.2em;}
+.music,.gift{margin-top:12px; cursor:pointer; font-size:1em;}
+
+.ticker{margin-top:25px; overflow:hidden; border-top:1px solid #eee; padding-top:12px; height:60px;}
+.track{display:flex; flex-direction:column; gap:5px;}
+.line{display:flex; white-space:nowrap;}
+.line span {margin-right: 120px; white-space: nowrap;}
 </style>
 </head>
+
 <body>
 
 <canvas id="bg"></canvas>
@@ -36,8 +75,10 @@ button{width:100%;padding:14px;border-radius:22px;border:none;cursor:pointer;bac
 
 <div class="card">
   <div class="toggle" onclick="toggleMode()">🌗</div>
+
   <h1>Happy New Year</h1>
   <div class="year">2026</div>
+
   <div class="subtitle">
     <div>ขอให้ปีใหม่ปีนี้มีแต่ความสุข</div>
     <div>สมหวังในทุกสิ่ง ✨</div>
@@ -45,6 +86,7 @@ button{width:100%;padding:14px;border-radius:22px;border:none;cursor:pointer;bac
 
   <input id="wish" placeholder="พิมพ์คำอวยพรสุภาพ">
   <button onclick="sendWish()">ส่งคำอวยพร</button>
+
   <div class="music" onclick="toggleMusic()">🎵 เพลง</div>
   <div class="gift" onclick="openGift()">🎁 เปิดของขวัญพรีเมียม</div>
 
@@ -56,11 +98,42 @@ button{width:100%;padding:14px;border-radius:22px;border:none;cursor:pointer;bac
   </div>
 </div>
 
-<!-- Firebase SDK -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
+<script>
+const bg=document.getElementById("bg");
+const fx=document.getElementById("fx");
+const ctx=bg.getContext("2d");
+const fctx=fx.getContext("2d");
+const bgm=document.getElementById("bgm");
+
+function resize(){bg.width=fx.width=innerWidth; bg.height=fx.height=innerHeight;}
+resize(); onresize=resize;
+
+// ⭐ stars
+const stars=[...Array(120)].map(()=>({x:Math.random()*bg.width,y:Math.random()*bg.height,r:Math.random()*1.5,a:Math.random()}));
+// ☁️ clouds
+const clouds=[...Array(6)].map(()=>({x:Math.random()*bg.width,y:Math.random()*200,s:.5+Math.random()*.5}));
+let manual=null;
+
+function drawNight(){ctx.clearRect(0,0,bg.width,bg.height); ctx.fillStyle="#fff"; stars.forEach(s=>{ctx.globalAlpha=s.a; ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill(); s.a+=(Math.random()-.5)*.05; s.a=Math.max(.2,Math.min(1,s.a));});}
+function drawDay(){ctx.clearRect(0,0,bg.width,bg.height); clouds.forEach(c=>{ctx.globalAlpha=.6; ctx.fillStyle="#fff"; ctx.beginPath(); ctx.ellipse(c.x,c.y,120*c.s,40*c.s,0,0,Math.PI*2); ctx.fill(); c.x+=.3; if(c.x>bg.width+200)c.x=-200;});}
+function animate(){const h=new Date().getHours(); const night=manual!==null?manual:(h>=18||h<6); document.body.className=night?"night":"day"; night?drawNight():drawDay(); requestAnimationFrame(animate);}
+animate();
+function toggleMode(){manual=!document.body.classList.contains("night");}
+
+// 🎆 confetti
+let conf=[]; function burst(){for(let i=0;i<120;i++){conf.push({x:Math.random()*fx.width,y:-10,v:2+Math.random()*4,r:Math.random()*6});}}
+function confetti(){fctx.clearRect(0,0,fx.width,fx.height); conf.forEach(c=>{fctx.fillStyle=`hsl(${Math.random()*360},80%,60%)`; fctx.beginPath(); fctx.arc(c.x,c.y,c.r,0,Math.PI*2); fctx.fill(); c.y+=c.v;}); conf=conf.filter(c=>c.y<fx.height); requestAnimationFrame(confetti);}
+confetti();
+
+// 🚫 bad words
+const bad=["เหี้ย","ควย","สัส"];
+function clean(t){bad.forEach(w=>{t=t.replace(new RegExp(w,"gi"),"*");}); return t;}
+
+// ---- Firebase Config ----
 const firebaseConfig = {
   apiKey: "AIzaSyBIwD6iMYKHEyfe6aj2mP6KN9g8Q6wAlFA",
   authDomain: "newyear2026-8186f.firebaseapp.com",
@@ -71,30 +144,46 @@ const firebaseConfig = {
   appId: "1:754522006420:web:626f39febe1d37dd78a581",
   measurementId: "G-8SXS8ZDCVC"
 };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const wishesRef = db.ref('wishes');
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const wishesRef = ref(db, 'wishes');
-
-// ticker line
 const line1 = document.getElementById("line1");
 const line2 = document.getElementById("line2");
+let saved = [];
+
+// โหลดข้อความ realtime
+wishesRef.on('value', snapshot => {
+  const data = snapshot.val() || {};
+  saved = Object.values(data);
+  updateTicker();
+});
 
 // ฟังก์ชันอัปเดต ticker
-function updateTicker(messages){
+function updateTicker(){
   const line1Content = ['🎉 ยินดีต้อนรับสู่ปีใหม่ 2026 🎉'];
   const line2Content = ['✨ ขอให้มีความสุข สมหวังทุกประการ ✨'];
 
-  messages.forEach((w,i)=>{
-    if(i%2===0) line1Content.push('✨ '+w);
-    else line2Content.push('✨ '+w);
+  saved.forEach((w,i)=>{
+    if(i%2===0) line1Content.push('✨ ' + w);
+    else line2Content.push('✨ ' + w);
   });
 
-  line1.innerHTML = line1Content.map(t=>`<span>${t}</span>`).join('');
-  line2.innerHTML = line2Content.map(t=>`<span>${t}</span>`).join('');
+  line1.innerHTML = line1Content.map(t => `<span>${t}</span>`).join('');
+  line2.innerHTML = line2Content.map(t => `<span>${t}</span>`).join('');
 }
 
-// ฟังก์ชันให้แต่ละบรรทัดวิ่ง
+// ฟังก์ชันส่งข้อความ
+function sendWish(){
+  const i=document.getElementById("wish");
+  if(!i.value.trim()) return;
+  const text = clean(i.value);
+  wishesRef.push(text);
+  i.value = "";
+  burst();
+}
+
+// วิ่ง ticker
 function animateLine(line, speed){
   let x = line.offsetWidth;
   function move(){
@@ -105,54 +194,18 @@ function animateLine(line, speed){
   }
   move();
 }
-animateLine(line1, 1.2);
-animateLine(line2, 1);
-
-// โหลดข้อความจาก Firebase แบบ realtime
-onValue(wishesRef, snapshot => {
-  const data = snapshot.val() || {};
-  const allMessages = Object.values(data);
-  updateTicker(allMessages);
-});
-
-// ส่งข้อความใหม่ไป Firebase
-function sendWish(){
-  const i = document.getElementById("wish");
-  if(!i.value.trim()) return;
-  push(wishesRef, i.value);
-  i.value = "";
-}
+animateLine(line1,1.2);
+animateLine(line2,1);
 
 // 🎁 gift
 const gifts=["10 บาท","1 บาท","1 บาท","20 บาท","10บาท"];
-function openGift(){ alert(gifts[Math.floor(Math.random()*gifts.length)]); }
+function openGift(){alert(gifts[Math.floor(Math.random()*gifts.length)]); burst();}
 
 // 🎵 music
-const bgm=document.getElementById("bgm");
-function toggleMusic(){ bgm.paused?bgm.play():bgm.pause(); }
-
-// Toggle day/night
-let manual=null;
-function toggleMode(){ manual=!document.body.classList.contains("night"); }
-
-// Canvas background (day/night)
-const bg=document.getElementById("bg");
-const fx=document.getElementById("fx");
-const ctx=bg.getContext("2d");
-const fctx=fx.getContext("2d");
-
-function resize(){ bg.width=fx.width=innerWidth; bg.height=fx.height=innerHeight; }
-resize(); onresize=resize;
-
-// Stars & clouds
-const stars=[...Array(120)].map(()=>({x:Math.random()*bg.width,y:Math.random()*bg.height,r:Math.random()*1.5,a:Math.random()}));
-const clouds=[...Array(6)].map(()=>({x:Math.random()*bg.width,y:Math.random()*200,s:.5+Math.random()*.5}));
-
-function drawNight(){ctx.clearRect(0,0,bg.width,bg.height);ctx.fillStyle="#fff";stars.forEach(s=>{ctx.globalAlpha=s.a;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();s.a+=(Math.random()-.5)*.05;s.a=Math.max(.2,Math.min(1,s.a));});}
-function drawDay(){ctx.clearRect(0,0,bg.width,bg.height);clouds.forEach(c=>{ctx.globalAlpha=.6;ctx.fillStyle="#fff";ctx.beginPath();ctx.ellipse(c.x,c.y,120*c.s,40*c.s,0,0,Math.PI*2);ctx.fill();c.x+=.3;if(c.x>bg.width+200)c.x=-200;});}
-function animate(){const h=new Date().getHours();const night=manual!==null?manual:(h>=18||h<6);document.body.className=night?"night":"day";night?drawNight():drawDay();requestAnimationFrame(animate);}
-animate();
+function toggleMusic(){bgm.paused?bgm.play():bgm.pause();}
 </script>
 
 </body>
 </html>
+
+
